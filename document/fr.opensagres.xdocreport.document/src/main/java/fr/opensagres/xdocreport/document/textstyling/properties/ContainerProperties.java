@@ -55,6 +55,10 @@ public abstract class ContainerProperties
 
     private String styleName;
 
+    private String textColorHex;
+
+    private String backgroundColorName;
+
     private final ContainerType type;
 
     public ContainerProperties( ContainerType type )
@@ -165,4 +169,19 @@ public abstract class ContainerProperties
         this.styleName = styleName;
     }
 
+    public void setTextColorHex(String textColorHex) {
+        this.textColorHex = textColorHex;
+    }
+
+    public void setBackgroundColorName(String colorName) {
+        this.backgroundColorName = colorName;
+    }
+
+    public String getTextColorHex() {
+        return textColorHex;
+    }
+
+    public String getBackgroundColorName() {
+        return backgroundColorName;
+    }
 }

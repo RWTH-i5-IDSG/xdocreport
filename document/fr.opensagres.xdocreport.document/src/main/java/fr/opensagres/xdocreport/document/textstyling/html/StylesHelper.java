@@ -24,12 +24,6 @@
  */
 package fr.opensagres.xdocreport.document.textstyling.html;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.xml.sax.Attributes;
-
 import fr.opensagres.xdocreport.core.utils.StringUtils;
 import fr.opensagres.xdocreport.document.textstyling.properties.ContainerProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.HeaderProperties;
@@ -41,6 +35,14 @@ import fr.opensagres.xdocreport.document.textstyling.properties.TableCellPropert
 import fr.opensagres.xdocreport.document.textstyling.properties.TableProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.TableRowProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.TextAlignment;
+import org.xml.sax.Attributes;
+
+import java.awt.Color;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Styles Helper.
@@ -268,6 +270,26 @@ public class StylesHelper
         if (styleName != null) {
             properties.setStyleName(styleName);
         }
+
+        // text color
+        String cssColor = stylesMap.get("color");
+        if (cssColor != null) {
+            Color color = parseToColor(cssColor);
+            if (color != null) {
+                // without #, because Word wants it this way (http://officeopenxml.com/WPtextFormatting.php)
+                String hex = String.format("%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
+                properties.setTextColorHex(hex);
+            }
+        }
+
+        // background/highlight color
+        String cssBgColor = stylesMap.get("background-color");
+        if (cssBgColor != null) {
+            Color color = parseToColor(cssBgColor);
+            if (color != null) {
+                properties.setBackgroundColorName(HighlightColor.getNameOfClosest(color));
+            }
+        }
     }
 
     public static TableProperties createTableProperties( Attributes attributes )
@@ -286,5 +308,86 @@ public class StylesHelper
     {
         TableCellProperties properties = new TableCellProperties();
         return properties;
+    }
+
+    /**
+     * At the moment, we support rgb and hex formats.
+     */
+    private static Color parseToColor(String input) {
+        try {
+            // Taken from: https://stackoverflow.com/a/7614202
+            Pattern rgbPattern = Pattern.compile("rgb *\\( *([0-9]+), *([0-9]+), *([0-9]+) *\\)");
+            Matcher m = rgbPattern.matcher(input);
+            if (m.matches()) {
+                return new Color(
+                        Integer.valueOf(m.group(1)), // r
+                        Integer.valueOf(m.group(2)), // g
+                        Integer.valueOf(m.group(3))  // b
+                );
+            } else if (input.startsWith("#")) {
+                return Color.decode(input);
+            }
+        } catch (Exception e) {
+            // No-op
+        }
+        return null;
+    }
+
+    /**
+     * Names taken from {@link org.openxmlformats.schemas.wordprocessingml.x2006.main.STHighlightColor}
+     */
+    private enum HighlightColor {
+        BLACK("black", new Color(0, 0, 0)),
+        BLUE("blue", new Color(0, 0, 255)),
+        CYAN("cyan", new Color(0, 255, 255)),
+        GREEN("green", new Color(0, 255, 0)),
+        MAGENTA("magenta", new Color(255, 0, 255)),
+        RED("red", new Color(255, 0, 0)),
+        YELLOW("yellow", new Color(255, 255, 0)),
+        WHITE("white", new Color(255, 255, 255)),
+
+        DARK_BLUE("darkBlue", new Color(0, 0, 128)),
+        DARK_CYAN("darkCyan", new Color(0, 128, 128)),
+        DARK_GREEN("darkGreen", new Color(0, 128, 0)),
+        DARK_MAGENTA("darkMagenta", new Color(128, 0, 128)),
+        DARK_RED("darkRed", new Color(128, 0, 0)),
+        DARK_YELLOW("darkYellow", new Color(128, 128, 0)),
+        DARK_GRAY("darkGray", new Color(105, 105, 105)),
+        LIGHT_GRAY("lightGray", new Color(192, 192, 192));
+
+        private final String colorName;
+        private final Color color;
+
+        HighlightColor(String colorName, Color color) {
+            this.colorName = colorName;
+            this.color = color;
+        }
+
+        private static String getNameOfClosest(Color c) {
+            String lastName = null;
+            double lastDistance = Double.MAX_VALUE;
+            for (HighlightColor highlightColor : values()) {
+                double distance = colorDistance(c, highlightColor.color);
+                if (distance < lastDistance) {
+                    lastDistance = distance;
+                    lastName = highlightColor.colorName;
+                }
+            }
+            return lastName;
+        }
+
+        /**
+         * Taken from: https://stackoverflow.com/a/6334454
+         */
+        private static double colorDistance(Color c1, Color c2) {
+            int red1 = c1.getRed();
+            int red2 = c2.getRed();
+            int rmean = (red1 + red2) >> 1;
+            int r = red1 - red2;
+            int g = c1.getGreen() - c2.getGreen();
+            int b = c1.getBlue() - c2.getBlue();
+            return Math.sqrt((((512 + rmean) * r * r) >> 8) + 4 * g * g + (((767 - rmean) * b * b) >> 8));
+        }
+
     }
 }

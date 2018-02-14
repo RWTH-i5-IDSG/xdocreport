@@ -231,6 +231,8 @@ public class DocxDocumentHandler
             boolean strike = striking;
             boolean subscript = subscripting;
             boolean superscript = superscripting;
+            String textColorHex = null;
+            String backgroundColorName = null;
             SpanProperties properties = getCurrentSpanProperties();
             if ( properties != null )
             {
@@ -259,10 +261,12 @@ public class DocxDocumentHandler
                 {
                 	superscript = properties.isSuperscript();
                 }
+                textColorHex = properties.getTextColorHex();
+                backgroundColorName = properties.getBackgroundColorName();
             }
             super.write( "<w:r>" );
             // w:RP
-            processRunProperties( false, bold, italic, underline, strike, subscript, superscript );
+            processRunProperties( false, bold, italic, underline, strike, subscript, superscript, textColorHex, backgroundColorName );
             // w:br
             for ( int i = 0; i < addLineBreak; i++ )
             {
@@ -281,10 +285,11 @@ public class DocxDocumentHandler
     }
 
     private void processRunProperties( boolean isInsidePPr, boolean bold, boolean italics, boolean underline,
-                                       boolean strike, boolean subscript, boolean superscript )
+                                       boolean strike, boolean subscript, boolean superscript,
+                                       String textColorHex, String backgroundColorName )
         throws IOException
     {
-        if ( bold || italics || underline || strike || subscript || superscript  )
+        if ( bold || italics || underline || strike || subscript || superscript || textColorHex != null || backgroundColorName != null )
         {
             if ( isInsidePPr )
             {
@@ -312,6 +317,12 @@ public class DocxDocumentHandler
             }
             if (superscript) {
             	super.write( "<w:vertAlign w:val=\"superscript\"/>" );
+            }
+            if (textColorHex != null) {
+                super.write("<w:color w:val=\"" + textColorHex + "\"/>");
+            }
+            if (backgroundColorName != null) {
+                super.write("<w:highlight w:val=\"" + backgroundColorName + "\"/>");
             }
             super.write( "</w:rPr>" );
         }
@@ -473,7 +484,8 @@ public class DocxDocumentHandler
             }
             // rPPr
             processRunProperties( true, properties.isBold(), properties.isItalic(), properties.isUnderline(),
-                                  properties.isStrike(), properties.isSubscript(), properties.isSuperscript() );
+                                  properties.isStrike(), properties.isSubscript(), properties.isSuperscript(),
+                                  properties.getTextColorHex(), properties.getBackgroundColorName() );
         }
 
         endPPrIfNeeded();
