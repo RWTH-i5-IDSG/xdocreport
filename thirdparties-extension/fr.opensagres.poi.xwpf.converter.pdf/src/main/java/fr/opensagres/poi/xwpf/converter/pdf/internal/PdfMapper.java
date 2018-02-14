@@ -552,13 +552,15 @@ public class PdfMapper extends
 	}
 
 	/**
-	 * Strike-through is part of the {@link Font} definition. Vertical align is handled by this class.
+	 * - Strike-through is part of the {@link Font} definition.
+	 * - Vertical align is handled by this class.
+	 * - Highlight is handled by this class.
 	 *
 	 * Therefore, they do not need any special treatment and we exclude them by overriding this method of the superclass.
 	 */
 	@Override
 	protected boolean hasTextStyles(CTRPr rPr) {
-		return rPr != null && (rPr.getHighlight() != null || rPr.getDstrike() != null);
+		return rPr != null && rPr.getDstrike() != null;
 	}
 
 	private Font getFont(String fontFamily, Float fontSize, int fontStyle,
