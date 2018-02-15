@@ -88,6 +88,8 @@ public class DocxDocumentHandler
 
     private int addLineBreak;
 
+    private boolean emulatingSpan = false;
+
     public DocxDocumentHandler( BufferedElement parent, IContext context, String entryName )
     {
         super( parent, context, entryName );
@@ -149,12 +151,17 @@ public class DocxDocumentHandler
     @Override
     public void startBold(SpanProperties properties) throws IOException {
         startBold();
+        emulatingSpan = true;
         spansStack.push(properties);
     }
 
     public void endBold()
     {
         this.bolding = false;
+        if (emulatingSpan) {
+            emulatingSpan = false;
+            spansStack.pop();
+        }
     }
 
     public void startItalics()
@@ -165,12 +172,17 @@ public class DocxDocumentHandler
     @Override
     public void startItalics(SpanProperties properties) throws IOException {
         startItalics();
+        emulatingSpan = true;
         spansStack.push(properties);
     }
 
     public void endItalics()
     {
         this.italicsing = false;
+        if (emulatingSpan) {
+            emulatingSpan = false;
+            spansStack.pop();
+        }
     }
 
     public void startUnderline()
@@ -182,6 +194,7 @@ public class DocxDocumentHandler
     @Override
     public void startUnderline(SpanProperties properties) throws IOException {
         startUnderline();
+        emulatingSpan = true;
         spansStack.push(properties);
     }
 
@@ -189,6 +202,10 @@ public class DocxDocumentHandler
         throws IOException
     {
         this.underlining = false;
+        if (emulatingSpan) {
+            emulatingSpan = false;
+            spansStack.pop();
+        }
     }
 
     public void startStrike()
@@ -200,6 +217,7 @@ public class DocxDocumentHandler
     @Override
     public void startStrike(SpanProperties properties) throws IOException {
         startStrike();
+        emulatingSpan = true;
         spansStack.push(properties);
     }
 
@@ -207,6 +225,10 @@ public class DocxDocumentHandler
         throws IOException
     {
         this.striking = false;
+        if (emulatingSpan) {
+            emulatingSpan = false;
+            spansStack.pop();
+        }
     }
 
     public void startSubscript()
@@ -218,6 +240,7 @@ public class DocxDocumentHandler
     @Override
     public void startSubscript(SpanProperties properties) throws IOException {
         startSubscript();
+        emulatingSpan = true;
         spansStack.push(properties);
     }
 
@@ -225,6 +248,10 @@ public class DocxDocumentHandler
         throws IOException
     {
     	this.subscripting = false;
+        if (emulatingSpan) {
+            emulatingSpan = false;
+            spansStack.pop();
+        }
     }
 
     public void startSuperscript()
@@ -236,6 +263,7 @@ public class DocxDocumentHandler
     @Override
     public void startSuperscript(SpanProperties properties) throws IOException {
         startSuperscript();
+        emulatingSpan = true;
         spansStack.push(properties);
     }
 
@@ -243,6 +271,10 @@ public class DocxDocumentHandler
         throws IOException
     {
     	this.superscripting = false;
+        if (emulatingSpan) {
+            emulatingSpan = false;
+            spansStack.pop();
+        }
     }
 
     @Override
