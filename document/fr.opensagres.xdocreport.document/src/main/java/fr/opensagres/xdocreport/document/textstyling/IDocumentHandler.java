@@ -77,6 +77,8 @@ public interface IDocumentHandler
     void startBold()
         throws IOException;
 
+    void startBold(SpanProperties properties) throws IOException;
+
     /**
      * End bold style.
      */
@@ -88,6 +90,8 @@ public interface IDocumentHandler
      */
     void startItalics()
         throws IOException;
+
+    void startItalics(SpanProperties properties) throws IOException;
 
     /**
      * End italics style.
@@ -101,6 +105,8 @@ public interface IDocumentHandler
     void startUnderline()
         throws IOException;
 
+    void startUnderline(SpanProperties properties) throws IOException;
+
     /**
      * End underline style.
      */
@@ -112,6 +118,8 @@ public interface IDocumentHandler
      */
     void startStrike()
         throws IOException;
+
+    void startStrike(SpanProperties properties) throws IOException;
 
     /**
      * End Strike style.
@@ -125,6 +133,9 @@ public interface IDocumentHandler
     void startSubscript()
         throws IOException;
 
+
+    void startSubscript(SpanProperties properties) throws IOException;
+
     /**
      * End Subscript style.
      */
@@ -136,6 +147,8 @@ public interface IDocumentHandler
      */
     void startSuperscript()
         throws IOException;
+
+    void startSuperscript(SpanProperties properties) throws IOException;
 
     /**
      * End Superscript style.

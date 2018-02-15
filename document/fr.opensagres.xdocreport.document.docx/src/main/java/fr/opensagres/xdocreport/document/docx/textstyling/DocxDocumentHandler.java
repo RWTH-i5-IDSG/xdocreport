@@ -146,6 +146,12 @@ public class DocxDocumentHandler
         this.bolding = true;
     }
 
+    @Override
+    public void startBold(SpanProperties properties) throws IOException {
+        startBold();
+        spansStack.push(properties);
+    }
+
     public void endBold()
     {
         this.bolding = false;
@@ -154,6 +160,12 @@ public class DocxDocumentHandler
     public void startItalics()
     {
         this.italicsing = true;
+    }
+
+    @Override
+    public void startItalics(SpanProperties properties) throws IOException {
+        startItalics();
+        spansStack.push(properties);
     }
 
     public void endItalics()
@@ -165,6 +177,12 @@ public class DocxDocumentHandler
         throws IOException
     {
         this.underlining = true;
+    }
+
+    @Override
+    public void startUnderline(SpanProperties properties) throws IOException {
+        startUnderline();
+        spansStack.push(properties);
     }
 
     public void endUnderline()
@@ -179,6 +197,12 @@ public class DocxDocumentHandler
         this.striking = true;
     }
 
+    @Override
+    public void startStrike(SpanProperties properties) throws IOException {
+        startStrike();
+        spansStack.push(properties);
+    }
+
     public void endStrike()
         throws IOException
     {
@@ -191,6 +215,12 @@ public class DocxDocumentHandler
     	this.subscripting = true;
     }
 
+    @Override
+    public void startSubscript(SpanProperties properties) throws IOException {
+        startSubscript();
+        spansStack.push(properties);
+    }
+
     public void endSubscript()
         throws IOException
     {
@@ -201,6 +231,12 @@ public class DocxDocumentHandler
         throws IOException
     {
     	this.superscripting = true;
+    }
+
+    @Override
+    public void startSuperscript(SpanProperties properties) throws IOException {
+        startSuperscript();
+        spansStack.push(properties);
     }
 
     public void endSuperscript()

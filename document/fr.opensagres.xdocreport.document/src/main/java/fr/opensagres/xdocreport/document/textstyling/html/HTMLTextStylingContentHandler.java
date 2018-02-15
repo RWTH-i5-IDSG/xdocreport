@@ -174,32 +174,38 @@ public class HTMLTextStylingContentHandler
             if ( STRONG_ELT.equals( name ) || B_ELT.equals( name ) )
             {
                 // Bold
-                documentHandler.startBold();
+                SpanProperties properties = StylesHelper.createSpanProperties( attributes.getValue( STYLE_ATTR ) );
+                documentHandler.startBold(properties);
             }
             else if ( EM_ELT.equals( name ) || I_ELT.equals( name ) )
             {
                 // Italic
-                documentHandler.startItalics();
+                SpanProperties properties = StylesHelper.createSpanProperties( attributes.getValue( STYLE_ATTR ) );
+                documentHandler.startItalics(properties);
             }
             else if ( U_ELT.equals( name ) )
             {
                 // Underline
-                documentHandler.startUnderline();
+                SpanProperties properties = StylesHelper.createSpanProperties( attributes.getValue( STYLE_ATTR ) );
+                documentHandler.startUnderline(properties);
             }
             else if ( STRIKE_ELT.equals( name ) || S_ELT.equals( name ) )
             {
                 // Strike
-                documentHandler.startStrike();
+                SpanProperties properties = StylesHelper.createSpanProperties( attributes.getValue( STYLE_ATTR ) );
+                documentHandler.startStrike(properties);
             }
             else if ( SUB_ELT.equals( name ) )
             {
                 // Subscript
-                documentHandler.startSubscript();
+                SpanProperties properties = StylesHelper.createSpanProperties( attributes.getValue( STYLE_ATTR ) );
+                documentHandler.startSubscript(properties);
             }
             else if ( SUP_ELT.equals( name ) )
             {
                 // Superscript
-                documentHandler.startSuperscript();
+                SpanProperties properties = StylesHelper.createSpanProperties( attributes.getValue( STYLE_ATTR ) );
+                documentHandler.startSuperscript(properties);
             }
             else if ( UL_ELT.equals( name ) )
             {

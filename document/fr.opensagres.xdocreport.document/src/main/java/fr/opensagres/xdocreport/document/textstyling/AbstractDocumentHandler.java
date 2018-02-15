@@ -31,6 +31,7 @@ import java.util.Stack;
 
 import fr.opensagres.xdocreport.document.preprocessor.sax.BufferedElement;
 import fr.opensagres.xdocreport.document.textstyling.properties.ListProperties;
+import fr.opensagres.xdocreport.document.textstyling.properties.SpanProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.TableCellProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.TableProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.TableRowProperties;
@@ -304,6 +305,42 @@ public abstract class AbstractDocumentHandler
         result.append( "\n" );
         result.append( "@textEnd=" + getTextEnd() );
         return result.toString();
+    }
+
+    @Override
+    public void startBold(SpanProperties properties) throws IOException {
+        // Fall back to basic method, properties are to be implemented by extending class
+        startBold();
+    }
+
+    @Override
+    public void startItalics(SpanProperties properties) throws IOException {
+        // Fall back to basic method, properties are to be implemented by extending class
+        startItalics();
+    }
+
+    @Override
+    public void startUnderline(SpanProperties properties) throws IOException {
+        // Fall back to basic method, properties are to be implemented by extending class
+        startUnderline();
+    }
+
+    @Override
+    public void startStrike(SpanProperties properties) throws IOException {
+        // Fall back to basic method, properties are to be implemented by extending class
+        startStrike();
+    }
+
+    @Override
+    public void startSubscript(SpanProperties properties) throws IOException {
+        // Fall back to basic method, properties are to be implemented by extending class
+        startSubscript();
+    }
+
+    @Override
+    public void startSuperscript(SpanProperties properties) throws IOException {
+        // Fall back to basic method, properties are to be implemented by extending class
+        startSuperscript();
     }
 
     protected abstract void doStartUnorderedList( ListProperties properties )
