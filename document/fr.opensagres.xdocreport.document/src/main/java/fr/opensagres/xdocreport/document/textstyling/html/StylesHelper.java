@@ -335,6 +335,7 @@ public class StylesHelper
 
     /**
      * Names taken from {@link org.openxmlformats.schemas.wordprocessingml.x2006.main.STHighlightColor}
+     * Color codes chosen to match {@link fr.opensagres.poi.xwpf.converter.core.styles.run.RunTextHighlightingValueProvider}
      */
     private enum HighlightColor {
         BLACK("black", new Color(0, 0, 0)),
@@ -347,12 +348,12 @@ public class StylesHelper
         WHITE("white", new Color(255, 255, 255)),
 
         DARK_BLUE("darkBlue", new Color(0, 0, 128)),
-        DARK_CYAN("darkCyan", new Color(0, 128, 128)),
-        DARK_GREEN("darkGreen", new Color(0, 128, 0)),
-        DARK_MAGENTA("darkMagenta", new Color(128, 0, 128)),
-        DARK_RED("darkRed", new Color(128, 0, 0)),
+        DARK_CYAN("darkCyan", new Color(0, 139, 139)),
+        DARK_GREEN("darkGreen", new Color(0, 51, 0)),
+        DARK_MAGENTA("darkMagenta", new Color(139, 0, 139)),
+        DARK_RED("darkRed", new Color(139, 0, 0)),
         DARK_YELLOW("darkYellow", new Color(128, 128, 0)),
-        DARK_GRAY("darkGray", new Color(105, 105, 105)),
+        DARK_GRAY("darkGray", new Color(64, 64, 64)),
         LIGHT_GRAY("lightGray", new Color(192, 192, 192));
 
         private final String colorName;
