@@ -65,6 +65,10 @@ public class DocxDocumentHandler
     private boolean subscripting;
 
     private boolean superscripting;
+
+    private String textColorHexing;
+
+    private String backgroundColorNameing;
     
     private Stack<ContainerProperties> paragraphsStack;
 
@@ -88,8 +92,6 @@ public class DocxDocumentHandler
 
     private int addLineBreak;
 
-    private boolean emulatingSpan = false;
-
     public DocxDocumentHandler( BufferedElement parent, IContext context, String entryName )
     {
         super( parent, context, entryName );
@@ -108,6 +110,8 @@ public class DocxDocumentHandler
         this.striking = false;
         this.subscripting = false;
         this.superscripting = false;
+        this.textColorHexing = null;
+        this.backgroundColorNameing = null;
         this.paragraphsStack = new Stack<ContainerProperties>();
         this.spansStack = new Stack<SpanProperties>();
         this.addLineBreak = 0;
@@ -151,17 +155,12 @@ public class DocxDocumentHandler
     @Override
     public void startBold(SpanProperties properties) throws IOException {
         startBold();
-        emulatingSpan = true;
-        spansStack.push(properties);
+        extractColorInfo(properties);
     }
 
     public void endBold()
     {
         this.bolding = false;
-        if (emulatingSpan) {
-            emulatingSpan = false;
-            spansStack.pop();
-        }
     }
 
     public void startItalics()
@@ -172,17 +171,12 @@ public class DocxDocumentHandler
     @Override
     public void startItalics(SpanProperties properties) throws IOException {
         startItalics();
-        emulatingSpan = true;
-        spansStack.push(properties);
+        extractColorInfo(properties);
     }
 
     public void endItalics()
     {
         this.italicsing = false;
-        if (emulatingSpan) {
-            emulatingSpan = false;
-            spansStack.pop();
-        }
     }
 
     public void startUnderline()
@@ -194,18 +188,13 @@ public class DocxDocumentHandler
     @Override
     public void startUnderline(SpanProperties properties) throws IOException {
         startUnderline();
-        emulatingSpan = true;
-        spansStack.push(properties);
+        extractColorInfo(properties);
     }
 
     public void endUnderline()
         throws IOException
     {
         this.underlining = false;
-        if (emulatingSpan) {
-            emulatingSpan = false;
-            spansStack.pop();
-        }
     }
 
     public void startStrike()
@@ -217,18 +206,13 @@ public class DocxDocumentHandler
     @Override
     public void startStrike(SpanProperties properties) throws IOException {
         startStrike();
-        emulatingSpan = true;
-        spansStack.push(properties);
+        extractColorInfo(properties);
     }
 
     public void endStrike()
         throws IOException
     {
         this.striking = false;
-        if (emulatingSpan) {
-            emulatingSpan = false;
-            spansStack.pop();
-        }
     }
 
     public void startSubscript()
@@ -240,18 +224,13 @@ public class DocxDocumentHandler
     @Override
     public void startSubscript(SpanProperties properties) throws IOException {
         startSubscript();
-        emulatingSpan = true;
-        spansStack.push(properties);
+        extractColorInfo(properties);
     }
 
     public void endSubscript()
         throws IOException
     {
     	this.subscripting = false;
-        if (emulatingSpan) {
-            emulatingSpan = false;
-            spansStack.pop();
-        }
     }
 
     public void startSuperscript()
@@ -263,18 +242,13 @@ public class DocxDocumentHandler
     @Override
     public void startSuperscript(SpanProperties properties) throws IOException {
         startSuperscript();
-        emulatingSpan = true;
-        spansStack.push(properties);
+        extractColorInfo(properties);
     }
 
     public void endSuperscript()
         throws IOException
     {
     	this.superscripting = false;
-        if (emulatingSpan) {
-            emulatingSpan = false;
-            spansStack.pop();
-        }
     }
 
     @Override
@@ -299,8 +273,8 @@ public class DocxDocumentHandler
             boolean strike = striking;
             boolean subscript = subscripting;
             boolean superscript = superscripting;
-            String textColorHex = null;
-            String backgroundColorName = null;
+            String textColorHex = textColorHexing;
+            String backgroundColorName = backgroundColorNameing;
             SpanProperties properties = getCurrentSpanProperties();
             if ( properties != null )
             {
@@ -329,8 +303,14 @@ public class DocxDocumentHandler
                 {
                 	superscript = properties.isSuperscript();
                 }
-                textColorHex = properties.getTextColorHex();
-                backgroundColorName = properties.getBackgroundColorName();
+                if ( textColorHex == null )
+                {
+                    textColorHex = properties.getTextColorHex();
+                }
+                if ( backgroundColorName == null )
+                {
+                    backgroundColorName = properties.getBackgroundColorName();
+                }
             }
             super.write( "<w:r>" );
             // w:RP
@@ -393,7 +373,20 @@ public class DocxDocumentHandler
                 super.write("<w:highlight w:val=\"" + backgroundColorName + "\"/>");
             }
             super.write( "</w:rPr>" );
+            resetColorInfo();
         }
+    }
+
+    private void extractColorInfo(SpanProperties properties) {
+        if (properties != null) {
+            textColorHexing = properties.getTextColorHex();
+            backgroundColorNameing = properties.getBackgroundColorName();
+        }
+    }
+
+    private void resetColorInfo() {
+        textColorHexing = null;
+        backgroundColorNameing = null;
     }
 
     private void startParagraphIfNeeded()
