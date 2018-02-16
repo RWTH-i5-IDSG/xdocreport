@@ -378,8 +378,13 @@ public class DocxDocumentHandler
     }
 
     private void extractColorInfo(SpanProperties properties) {
-        if (properties != null) {
+        if (properties == null) {
+            return;
+        }
+        if (properties.getTextColorHex() != null) {
             textColorHexing = properties.getTextColorHex();
+        }
+        if (properties.getBackgroundColorName() != null) {
             backgroundColorNameing = properties.getBackgroundColorName();
         }
     }
