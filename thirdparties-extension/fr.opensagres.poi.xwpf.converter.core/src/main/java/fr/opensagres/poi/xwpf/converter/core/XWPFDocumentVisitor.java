@@ -80,6 +80,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSmartTagRun;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTString;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSym;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTabs;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTbl;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTc;
@@ -839,6 +840,10 @@ public abstract class XWPFDocumentVisitor<T, O extends Options, E extends IXWPFM
             {
                 visitDrawing( (CTDrawing) o, paragraphContainer );
             }
+            else if (o instanceof CTSym)
+            {
+                visitSymbol( (CTSym) o, pageNumber, paragraphContainer );
+            }
         }
         if(hasTexStyles && StringUtils.isNotEmpty(text.toString()))
         {
@@ -893,6 +898,9 @@ public abstract class XWPFDocumentVisitor<T, O extends Options, E extends IXWPFM
         throws Exception;
 
     protected abstract void pageBreak()
+        throws Exception;
+
+    protected abstract void visitSymbol(CTSym o, boolean pageNumber, T paragraphContainer)
         throws Exception;
 
     protected void visitTable( XWPFTable table, int index, T container )

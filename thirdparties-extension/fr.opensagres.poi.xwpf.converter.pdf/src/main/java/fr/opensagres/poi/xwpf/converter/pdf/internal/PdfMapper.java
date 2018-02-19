@@ -46,6 +46,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPTab;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSym;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTabStop;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTabs;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
@@ -96,6 +97,8 @@ import fr.opensagres.xdocreport.itext.extension.ExtendedPdfPCell;
 import fr.opensagres.xdocreport.itext.extension.ExtendedPdfPTable;
 import fr.opensagres.xdocreport.itext.extension.IITextContainer;
 import fr.opensagres.xdocreport.itext.extension.font.FontGroup;
+
+import java.nio.charset.Charset;
 
 public class PdfMapper extends
 		XWPFDocumentVisitor<IITextContainer, PdfOptions, StylableMasterPage> {
@@ -954,6 +957,22 @@ public class PdfMapper extends
 		Chunk chunk = new Chunk(TAB);
 		chunk.setLocalDestination(bookmark.getName());
 		paragraphContainer.addElement(chunk);
+	}
+
+	@Override
+	protected void visitSymbol(CTSym ctSym, boolean pageNumber, IITextContainer paragraphContainer) throws Exception {
+		// Use the same font settings as the current run,
+		// but with a different font family that comes from this symbol
+		Font f = currentRunFontAscii;
+		Font symbolFont = options.getFontProvider()
+								 .getFont(ctSym.getFont(), options.getFontEncoding(), f.getSize(), f.getStyle(), f.getColor());
+
+		byte[] charAsByteArray = ctSym.getChar();
+		String textContent = new String(charAsByteArray, Charset.forName("UTF-16"));
+
+		createAndAddChunks(paragraphContainer,textContent,
+				currentRunUnderlinePatterns, currentRunBackgroundColor,
+				pageNumber, symbolFont, symbolFont, symbolFont);
 	}
 
 	// ----------------- Table

@@ -66,6 +66,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSdtRun;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSimpleField;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSmartTagRun;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSym;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTabs;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTbl;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTc;
@@ -530,6 +531,10 @@ public abstract class OpenXMlFormatsVisitor<T, O extends Options, E extends IXWP
             {
                 visitDrawing( (CTDrawing) o, paragraphContainer );
             }
+            else if (o instanceof CTSym)
+            {
+                visitSymbol( (CTSym) o, pageNumber, paragraphContainer );
+            }
         }
         c.dispose();
     }
@@ -561,6 +566,9 @@ public abstract class OpenXMlFormatsVisitor<T, O extends Options, E extends IXWP
         throws Exception;
 
     protected abstract void addNewLine( CTBr br, T paragraphContainer )
+        throws Exception;
+
+    protected abstract void visitSymbol(CTSym o, boolean pageNumber, T paragraphContainer)
         throws Exception;
 
     // --------------------- Table

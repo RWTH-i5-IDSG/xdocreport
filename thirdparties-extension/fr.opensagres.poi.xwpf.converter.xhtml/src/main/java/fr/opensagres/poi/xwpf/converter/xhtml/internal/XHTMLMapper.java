@@ -51,6 +51,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSym;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTabs;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTcPr;
@@ -385,6 +386,13 @@ public class XHTMLMapper
     protected void pageBreak()
         throws Exception
     {
+    }
+
+    @Override
+    protected void visitSymbol(CTSym o, boolean pageNumber, Object paragraphContainer)
+        throws Exception
+    {
+        // No-op, to be implemented
     }
 
     @Override
