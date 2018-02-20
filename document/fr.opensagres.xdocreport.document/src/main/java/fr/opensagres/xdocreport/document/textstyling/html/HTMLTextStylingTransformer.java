@@ -67,6 +67,10 @@ public class HTMLTextStylingTransformer
     protected void doTransform( String content, IDocumentHandler documentHandler )
         throws Exception
     {
+        // Otherwise, the report contains "null"
+        if (content == null) {
+            content = "";
+        }
 
         // pre-process content : can be used to integrate a markup based html generator like markdown
         content = generateXhtmlFromContent( content );
