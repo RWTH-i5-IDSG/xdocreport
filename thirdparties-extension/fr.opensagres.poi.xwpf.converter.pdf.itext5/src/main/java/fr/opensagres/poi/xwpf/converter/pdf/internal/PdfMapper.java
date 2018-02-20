@@ -103,8 +103,6 @@ import fr.opensagres.xdocreport.itext.extension.font.FontGroup;
 public class PdfMapper extends
 		XWPFDocumentVisitor<IITextContainer, PdfOptions, StylableMasterPage> {
 
-	private static final String TAB = "\t";
-
 	/**
 	 * Logger for this class
 	 */
@@ -933,8 +931,8 @@ public class PdfMapper extends
 		// so we create chunk with invisible but not empty text content
 		// if bookmark is the last chunk in a paragraph something must be added
 		// after or it does not work
-		Chunk chunk = new Chunk(TAB);
-		chunk.setLocalDestination(bookmark.getName());
+        Chunk chunk = new Chunk("\u2063"); // Unicode Invisible Separator (U+2063)
+        chunk.setLocalDestination(bookmark.getName());
 		paragraphContainer.addElement(chunk);
 	}
 
