@@ -228,12 +228,24 @@ public class HTMLDocumentHandler
 
     }
 
-    public void handleImage( String ref, String label )
+    public void handleImage( String ref, String label, String widthInPixels, String heightInPixels )
         throws IOException
     {
         super.write( "<img src=\"" );
         super.write( ref );
-        super.write( "/>" );
+        super.write("\" alt=\"");
+        super.write( label );
+        if ( null != widthInPixels && widthInPixels.length() > 0 )
+        {
+            super.write("\" width=\"");
+            super.write( widthInPixels );
+        }
+        if ( null != heightInPixels && heightInPixels.length() > 0 )
+        {
+            super.write("\" height=\"");
+            super.write( heightInPixels );
+        }
+        super.write("\"/>" );
 
     }
 

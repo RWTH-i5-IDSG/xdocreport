@@ -289,9 +289,11 @@ public interface IDocumentHandler
      * 
      * @param ref
      * @param label
+     * @param widthInPixels
+     * @param heightInPixels
      * @throws IOException
      */
-    void handleImage( String ref, String label )
+    void handleImage( String ref, String label, String widthInPixels, String heightInPixels )
         throws IOException;
 
     /**

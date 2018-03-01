@@ -804,19 +804,18 @@ public abstract class AbstractXDocReport
         DocumentContextHelper.putTextStylingRegistry( context, TextStylingRegistry.getRegistry() );
 
         // 2) Register ImageRegistry if needed
-        IImageRegistry imageRegistry = null;
-        if ( fieldsMetadata != null && fieldsMetadata.hasFieldsAsImage() )
+        IImageRegistry imageRegistry = createImageRegistry( outputArchive, outputArchive, outputArchive );
+        if ( imageRegistry != null )
         {
-            imageRegistry = createImageRegistry( outputArchive, outputArchive, outputArchive );
-            if ( imageRegistry != null )
-            {
-                DocumentContextHelper.putImageRegistry( context, imageRegistry );
+            DocumentContextHelper.putImageRegistry( context, imageRegistry );
 
-                // Register default image handler if needed.
-                if ( DocumentContextHelper.getImageHandler( context ) == null )
-                {
-                    DocumentContextHelper.putImageHandler( context, DefaultImageHandler.getInstance() );
-                }
+            // Register default image handler if needed.
+            if ( DocumentContextHelper.getImageHandler( context ) == null )
+            {
+                DocumentContextHelper.putImageHandler( context, DefaultImageHandler.getInstance() );
+            }
+            if ( fieldsMetadata != null && fieldsMetadata.hasFieldsAsImage() )
+            {
                 imageRegistry.preProcess();
             }
         }

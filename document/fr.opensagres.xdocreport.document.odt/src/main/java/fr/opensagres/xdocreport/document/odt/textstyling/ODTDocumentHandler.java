@@ -495,7 +495,7 @@ public class ODTDocumentHandler
         // endParagraph();
     }
 
-    public void handleImage( String ref, String label )
+    public void handleImage( String ref, String label, String widthInPixels, String heightInPixels )
         throws IOException
     {
         // TODO: implements

@@ -99,6 +99,12 @@ public class HTMLTextStylingContentHandler
 
     private static final String SRC_ATTR = "src";
 
+    private static final String ALT_ATTR = "alt";
+
+    private static final String WIDTH_ATTR = "width";
+
+    private static final String HEIGHT_ATTR = "height";
+
     private static final String BR_ELT = "br";
 
     // HTML elements for subscript
@@ -278,7 +284,11 @@ public class HTMLTextStylingContentHandler
             {
                 // image
                 String src = attributes.getValue( SRC_ATTR );
-                documentHandler.handleImage( src, "" );
+                String alt = attributes.getValue( ALT_ATTR );
+                // TODO think about inline css styling properties max-width, width, max-height, height
+                String width = attributes.getValue( WIDTH_ATTR );
+                String height = attributes.getValue( HEIGHT_ATTR );
+                documentHandler.handleImage( src, null == alt ? "" : alt, width, height );
             }
             else if ( SPAN_ELT.equals( name ) )
             {

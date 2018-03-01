@@ -24,15 +24,30 @@
  */
 package fr.opensagres.xdocreport.document.docx.textstyling;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import fr.opensagres.xdocreport.core.XDocReportException;
+import fr.opensagres.xdocreport.core.logging.LogUtils;
 import fr.opensagres.xdocreport.core.utils.StringUtils;
+import fr.opensagres.xdocreport.document.DocumentContextHelper;
+import fr.opensagres.xdocreport.document.RFC2397Container;
+import fr.opensagres.xdocreport.document.RFC2397Parser;
+import fr.opensagres.xdocreport.document.docx.images.DocxImageRegistry;
 import fr.opensagres.xdocreport.document.docx.preprocessor.DefaultStyle;
 import fr.opensagres.xdocreport.document.docx.preprocessor.sax.hyperlinks.HyperlinkRegistry;
 import fr.opensagres.xdocreport.document.docx.preprocessor.sax.hyperlinks.HyperlinkUtils;
 import fr.opensagres.xdocreport.document.docx.preprocessor.sax.numbering.NumberingRegistry;
 import fr.opensagres.xdocreport.document.docx.template.DocxContextHelper;
+import fr.opensagres.xdocreport.document.images.ByteArrayImageProvider;
+import fr.opensagres.xdocreport.document.images.ImageProviderInfo;
 import fr.opensagres.xdocreport.document.preprocessor.sax.BufferedElement;
 import fr.opensagres.xdocreport.document.textstyling.AbstractDocumentHandler;
 import fr.opensagres.xdocreport.document.textstyling.properties.ContainerProperties;
@@ -47,12 +62,16 @@ import fr.opensagres.xdocreport.document.textstyling.properties.TableRowProperti
 import fr.opensagres.xdocreport.document.textstyling.properties.TextAlignment;
 import fr.opensagres.xdocreport.template.IContext;
 
+import javax.activation.MimeTypeParseException;
+
 /**
  * Document handler implementation to build docx fragment content.
  */
 public class DocxDocumentHandler
     extends AbstractDocumentHandler
 {
+
+    private static final Logger LOGGER = LogUtils.getLogger(DocxDocumentHandler.class.getName());
 
     private boolean bolding;
 
@@ -76,6 +95,8 @@ public class DocxDocumentHandler
 
     private HyperlinkRegistry hyperlinkRegistry;
 
+    protected final DocxImageRegistry imageRegistry;
+
     protected final IDocxStylesGenerator styleGen;
 
     private final NumberingRegistry numberingRegistry;
@@ -98,6 +119,7 @@ public class DocxDocumentHandler
         this.styleGen = DocxContextHelper.getStylesGenerator( context );
         this.defaultStyle = DocxContextHelper.getDefaultStyle( context );
         this.numberingRegistry = getNumberingRegistry( context );
+        this.imageRegistry = ((DocxImageRegistry) DocumentContextHelper.getImageRegistry( context ));
         this.insideHeader = false;
         this.paragraphWasInserted = false;
     }
@@ -745,14 +767,136 @@ public class DocxDocumentHandler
         }
     }
 
-    public void handleImage( String ref, String label )
-        throws IOException
-    {
+    @Override
+    public void handleImage(String ref, String label, String widthInPixels, String heightInPixels)
+            throws IOException {
+        if (null == ref) {
+            return;
+        }
+        // 1) replace & with &amp;
+        // fix issue http://code.google.com/p/xdocreport/issues/detail?id=154
+        label = StringUtils.xmlUnescape(label);
+        label = StringUtils.xmlEscape(label);
 
+        // 2) Get the image and add it to the image registry
+        final ByteArrayImageProvider byteArrayImageProvider;
+        try {
+            final RFC2397Container rfc2397Container = RFC2397Parser.parseDataURL(ref);
+            if (null != rfc2397Container) {
+                try (final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(rfc2397Container.getData())) {
+                    byteArrayImageProvider = new ByteArrayImageProvider(byteArrayInputStream, true);
+                }
+            } else {
+                // assume 'regular' URL
+                final URL url = new URL(ref);
+                final URLConnection urlConnection = url.openConnection();
+                try (final InputStream inputStream = urlConnection.getInputStream()) {
+                    byteArrayImageProvider = new ByteArrayImageProvider(inputStream, true);
+                }
+            }
+        } catch (final MimeTypeParseException e) {
+            LOGGER.log(Level.WARNING, "Could not parse mime type or properties of data url of image!", e);
+            return;
+        } catch (final UnsupportedEncodingException e) {
+            LOGGER.log(Level.WARNING, "Unsupported charset found in data url of image!", e);
+            return;
+        }
+        if (null != widthInPixels && widthInPixels.length() > 0) {
+            byteArrayImageProvider.setWidth(Integer.valueOf(widthInPixels).floatValue());
+        }
+        if (null != heightInPixels && heightInPixels.length() > 0) {
+            byteArrayImageProvider.setHeight(Integer.valueOf(heightInPixels).floatValue());
+        }
+        final String widthInEmu = imageRegistry.getSize(byteArrayImageProvider.getWidth(0.0f));
+        final String heightInEmu = imageRegistry.getSize(byteArrayImageProvider.getHeight(0.0f));
+
+        final ImageProviderInfo imageProviderInfo;
+        try {
+            imageProviderInfo = imageRegistry.registerImage(byteArrayImageProvider, null, null);
+        } catch (XDocReportException e) {
+            LOGGER.log(Level.WARNING, "Could not register image!", e);
+            return;
+        }
+
+        final String relId = imageProviderInfo.getImageId();
+        // FIXME this is a bad hack: it "knows" the xdocreport_ prefix and just starts numbering at 5000 to avoid collisions with IDs already used in the template
+        final String imageId = Integer.valueOf(Integer.valueOf(relId.substring("xdocreport_".length())) + 5000).toString();
+        final String imageName = label != null && label.length() > 0 ? label : relId;
+
+        // 3) Generate w:drawing
+        super.write("<w:r>");
+        super.write("<w:drawing>");
+        super.write("<wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">");
+        super.write("<wp:extent cx=\"");
+        super.write(widthInEmu);
+        super.write("\" cy=\"");
+        super.write(heightInEmu);
+        super.write("\"/>");
+        super.write("<wp:effectExtent t=\"0\" b=\"0\" l=\"0\" r=\"0\"/>");
+        super.write("<wp:docPr id=\"");
+        super.write(imageId);
+        super.write("\" name=\"");
+        super.write(imageName);
+        super.write("\"/>");
+        super.write("<wp:cNvGraphicFramePr>");
+        super.write("<a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/>");
+        super.write("</wp:cNvGraphicFramePr>");
+        super.write("<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
+        super.write("<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
+        super.write("<pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
+
+        // non-visual drawing properties
+        super.write("<pic:nvPicPr>");
+        super.write("<pic:cNvPr id=\"");
+        super.write(imageId);
+        super.write("\" name=\"");
+        super.write(imageName);
+        super.write("\" title=\"");
+        super.write(imageName);
+        super.write("\"/>");
+        super.write("<pic:cNvPicPr/>");
+        super.write("</pic:nvPicPr>");
+
+        // blip
+        super.write("<pic:blipFill>");
+        super.write("<a:blip r:embed=\"");
+        super.write(relId);
+        super.write("\"/>");
+        super.write("<a:stretch>");
+        super.write("<a:fillRect/>");
+        super.write("</a:stretch>");
+        super.write("</pic:blipFill>");
+
+        // shape properties
+        super.write("<pic:spPr>");
+        // transform 2d
+        super.write("<a:xfrm>");
+        // offset
+        super.write("<a:off x=\"0\" y=\"0\"/>");
+        // extents: cx = width, cy = height
+        super.write("<a:ext cx=\"");
+        super.write(widthInEmu);
+        super.write("\" cy=\"");
+        super.write(heightInEmu);
+        super.write("\"/>");
+        super.write("</a:xfrm>");
+        // use preset geometry 'rect'
+        super.write("<a:prstGeom prst=\"rect\">" );
+        // empty list of shape adjustments
+        super.write("<a:avLst/>" );
+        super.write("</a:prstGeom>");
+        super.write("</pic:spPr>");
+
+        // close open tags
+        super.write("</pic:pic>");
+        super.write("</a:graphicData>");
+        super.write("</a:graphic>");
+        super.write("</wp:inline>");
+        super.write("</w:drawing>");
+        super.write("</w:r>");
     }
 
-    private NumberingRegistry getNumberingRegistry()
-    {
+    private NumberingRegistry getNumberingRegistry() {
         return numberingRegistry;
     }
 
