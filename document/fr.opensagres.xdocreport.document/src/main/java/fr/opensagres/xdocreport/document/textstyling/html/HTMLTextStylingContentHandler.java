@@ -26,6 +26,7 @@ package fr.opensagres.xdocreport.document.textstyling.html;
 
 import java.io.IOException;
 
+import fr.opensagres.xdocreport.document.textstyling.properties.CaptionProperties;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -94,6 +95,10 @@ public class HTMLTextStylingContentHandler
     private static final String A_ELT = "a";
 
     private static final String IMG_ELT = "img";
+
+    private static final String CAPTION_ELT = "caption";
+
+    private static final String FIGCAPTION_ELT = "figcaption";
 
     private static final String HREF_ATTR = "href";
 
@@ -290,6 +295,18 @@ public class HTMLTextStylingContentHandler
                 String height = attributes.getValue( HEIGHT_ATTR );
                 documentHandler.handleImage( src, null == alt ? "" : alt, width, height );
             }
+            else if ( FIGCAPTION_ELT.equals( name ) )
+            {
+                // <figcaption>
+                CaptionProperties properties = StylesHelper.createCaptionProperties( attributes );
+                documentHandler.startFigureCaption( properties );
+            }
+            else if ( CAPTION_ELT.equals( name ) )
+            {
+                // <caption>
+                CaptionProperties properties = StylesHelper.createCaptionProperties( attributes );
+                documentHandler.startTableCaption( properties );
+            }
             else if ( SPAN_ELT.equals( name ) )
             {
                 // <span>
@@ -421,6 +438,16 @@ public class HTMLTextStylingContentHandler
             {
                 // <br/>
                 documentHandler.handleLineBreak();
+            }
+            else if ( FIGCAPTION_ELT.equals( name ) )
+            {
+                // </figcaption>
+                documentHandler.endFigureCaption();
+            }
+            else if ( CAPTION_ELT.equals( name ) )
+            {
+                // </caption>
+                documentHandler.endTableCaption();
             }
             else if ( SPAN_ELT.equals( name ) )
             {

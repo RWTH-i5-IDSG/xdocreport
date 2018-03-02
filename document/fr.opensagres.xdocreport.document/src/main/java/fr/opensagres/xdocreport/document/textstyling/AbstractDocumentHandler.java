@@ -30,6 +30,7 @@ import java.io.Writer;
 import java.util.Stack;
 
 import fr.opensagres.xdocreport.document.preprocessor.sax.BufferedElement;
+import fr.opensagres.xdocreport.document.textstyling.properties.CaptionProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.ListProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.SpanProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.TableCellProperties;
@@ -144,6 +145,45 @@ public abstract class AbstractDocumentHandler
         TableProperties properties = this.tablesStack.pop();
         doEndTable( properties );
     }
+
+    @Override
+    public final void startTableCaption( CaptionProperties properties )
+        throws IOException
+    {
+        // the following works for DOCX and HTML in the following way:
+        // the DOCX child USES temp writers and the table caption IS NOT part of the table environment
+        // the HTML child does NOT USE use temp writers and the table caption IS part of the table environment
+        // thus, for all currently relevant implementations, we can distinguish the cases via temp writer usage
+        final int numTempWriters = tempWriterStack.size();
+        if ( 0 == numTempWriters ) {
+            // HTML child: the current writer is not a temp writer
+        } else if ( 1 == numTempWriters ) {
+            // DOCX child: regular table situation, push main writer onto stack during table caption
+            tempWriterStack.push( currentWriter );
+        } else {
+            // DOCX child: nested table situation, write the caption into the surrounding cell container
+            tempWriterStack.push( tempWriterStack.get( numTempWriters - 1 ) );
+        }
+        doStartTableCaption( properties );
+    }
+
+    protected abstract void doStartTableCaption( CaptionProperties properties )
+            throws IOException;
+
+    @Override
+    public final void endTableCaption()
+        throws IOException
+    {
+        doEndTableCaption();
+        // if the temp writer stack was used, pop the last writer off the stack without using its content,
+        // since the writer existed beforehand (this is different to the popTempWriter logic)
+        if (!tempWriterStack.isEmpty()) {
+            tempWriterStack.pop();
+        }
+    }
+
+    protected abstract void doEndTableCaption()
+            throws IOException;
 
     public final void startTableRow( TableRowProperties properties )
         throws IOException
@@ -343,7 +383,7 @@ public abstract class AbstractDocumentHandler
         startSuperscript();
     }
 
-    protected abstract void doStartUnorderedList( ListProperties properties )
+    protected abstract void doStartUnorderedList(ListProperties properties )
         throws IOException;
 
     protected abstract void doStartOrderedList( ListProperties properties )

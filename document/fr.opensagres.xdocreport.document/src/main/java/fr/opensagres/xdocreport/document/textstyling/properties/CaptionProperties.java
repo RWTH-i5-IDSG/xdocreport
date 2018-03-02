@@ -22,31 +22,15 @@
  * OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package fr.opensagres.xdocreport.document.docx.textstyling;
+package fr.opensagres.xdocreport.document.textstyling.properties;
 
-import fr.opensagres.xdocreport.document.docx.preprocessor.DefaultStyle;
-import fr.opensagres.xdocreport.document.textstyling.IStylesGenerator;
-
-public interface IDocxStylesGenerator
-    extends IStylesGenerator<DefaultStyle>
+/**
+ * Caption properties.
+ */
+public class CaptionProperties extends ContainerProperties
 {
 
-    public static final String generateAbstractNumBullet = "generateAbstractNumBullet";
-    
-    public static final String generateAbstractNumDecimal = "generateAbstractNumDecimal";
-    
-    String generateAllStyles( DefaultStyle defaultStyle );
-
-    String getHyperLinkStyleId( DefaultStyle defaultStyle );
-
-    String getHeaderStyleId( int level, DefaultStyle defaultStyle );
-
-    String getCaptionStyleId( DefaultStyle defaultStyle );
-
-    Integer getAbstractNumIdForList( boolean ordered, DefaultStyle defaultStyle );
-
-    String generateAbstractNumBullet( DefaultStyle defaultStyle );
-
-    String generateAbstractNumDecimal( DefaultStyle defaultStyle, int abstractNumId );
-
+    public CaptionProperties() {
+        super(ContainerType.CAPTION);
+    }
 }

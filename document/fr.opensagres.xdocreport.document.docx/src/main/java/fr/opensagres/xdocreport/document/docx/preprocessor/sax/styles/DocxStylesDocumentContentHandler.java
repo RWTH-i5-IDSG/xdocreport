@@ -59,6 +59,8 @@ public class DocxStylesDocumentContentHandler
     // Styles names
     private static final String HYPERLINK_STYLE_NAME = "Hyperlink";
 
+    private static final String CAPTION_STYLE_NAME = "caption";
+
     private final IDocumentFormatter formatter;
 
     private final Map<String, Object> sharedContext;
@@ -92,6 +94,11 @@ public class DocxStylesDocumentContentHandler
                 {
                     DefaultStyle defaultStyle = DocxContextHelper.getDefaultStyle( sharedContext );
                     defaultStyle.setHyperLinkStyleId( currentStyleId );
+                }
+                if ( CAPTION_STYLE_NAME.equals( val ) )
+                {
+                    DefaultStyle defaultStyle = DocxContextHelper.getDefaultStyle( sharedContext );
+                    defaultStyle.setCaptionStyleId( currentStyleId );
                 }
                 else if ( val.startsWith( "heading " ) )
                 {

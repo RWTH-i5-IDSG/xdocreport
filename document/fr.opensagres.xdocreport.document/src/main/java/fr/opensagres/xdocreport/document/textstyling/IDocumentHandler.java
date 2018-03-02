@@ -26,6 +26,7 @@ package fr.opensagres.xdocreport.document.textstyling;
 
 import java.io.IOException;
 
+import fr.opensagres.xdocreport.document.textstyling.properties.CaptionProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.HeaderProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.ListItemProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.ListProperties;
@@ -232,6 +233,40 @@ public interface IDocumentHandler
      * @throws IOException
      */
     void endHeading( int level )
+        throws IOException;
+
+    /**
+     * Start figure caption.
+     *
+     * @param properties
+     * @throws IOException
+     */
+    void startFigureCaption( CaptionProperties properties )
+        throws IOException;
+
+    /**
+     * End figure caption.
+     *
+     * @throws IOException
+     */
+    void endFigureCaption()
+        throws IOException;
+
+    /**
+     * Start table caption.
+     *
+     * @param properties
+     * @throws IOException
+     */
+    void startTableCaption( CaptionProperties properties )
+        throws IOException;
+
+    /**
+     * End table caption.
+     *
+     * @throws IOException
+     */
+    void endTableCaption()
         throws IOException;
 
     /**

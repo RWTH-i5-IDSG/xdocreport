@@ -42,6 +42,8 @@ public class DocxDefaultStylesGenerator
 
     private static final Style XDocReport_Hyperlink_Style;
 
+    private static final Style XDocReport_Caption_Style;
+
     private static final List<Style> XDocReport_Headings_Style;
 
     private static final Style XDocReport_AbstractNum_decimal;
@@ -60,6 +62,7 @@ public class DocxDefaultStylesGenerator
             XDocReport_Headings_Style.add( Style.load( "XDocReport_Heading_" + i, DocxDefaultStylesGenerator.class ) );
         }
         XDocReport_Hyperlink_Style = Style.load( "XDocReport_Hyperlink", DocxDefaultStylesGenerator.class );
+        XDocReport_Caption_Style = Style.load( "XDocReport_Caption", DocxDefaultStylesGenerator.class );
         XDocReport_AbstractNum_decimal =
             Style.load( "XDocReport_AbstractNum_decimal", DocxDefaultStylesGenerator.class );
         XDocReport_AbstractNum_bullet = Style.load( "XDocReport_AbstractNum_bullet", DocxDefaultStylesGenerator.class );
@@ -69,6 +72,7 @@ public class DocxDefaultStylesGenerator
     {
         StringBuilder styles = new StringBuilder();
         generateHyperlinkStyle( styles, defaultStyle );
+        generateCaptionStyle( styles, defaultStyle );
         generateHeadersStyle( styles, defaultStyle );
         return styles.toString();
     }
@@ -99,6 +103,24 @@ public class DocxDefaultStylesGenerator
         }
         return StringUtils.isNotEmpty( defaultStyle.getHyperLinkStyleId() ) ? defaultStyle.getHyperLinkStyleId()
                         : XDocReport_Hyperlink_Style.getId();
+    }
+
+    public void generateCaptionStyle( StringBuilder style, DefaultStyle defaultStyle )
+    {
+        if ( !defaultStyle.hasCaptionStyleId() )
+        {
+            style.append( XDocReport_Caption_Style.getContent() );
+        }
+    }
+
+    public String getCaptionStyleId( DefaultStyle defaultStyle )
+    {
+        if ( defaultStyle == null )
+        {
+            return XDocReport_Caption_Style.getId();
+        }
+        return StringUtils.isNotEmpty( defaultStyle.getCaptionStyleId() ) ? defaultStyle.getCaptionStyleId()
+                : XDocReport_Caption_Style.getId();
     }
 
     public void generateHeadersStyle( StringBuilder styles, DefaultStyle defaultStyle )

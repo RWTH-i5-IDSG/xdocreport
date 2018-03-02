@@ -27,6 +27,7 @@ package fr.opensagres.xdocreport.document.textstyling.wiki.gwiki;
 import java.io.IOException;
 
 import fr.opensagres.xdocreport.document.textstyling.AbstractDocumentHandler;
+import fr.opensagres.xdocreport.document.textstyling.properties.CaptionProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.HeaderProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.ListItemProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.ListProperties;
@@ -201,7 +202,7 @@ public class HTMLDocumentHandler
     }
 
     public void startHeading( int level, HeaderProperties properties )
-        throws IOException
+            throws IOException
     {
         super.write( "<h" );
         super.write( level );
@@ -210,14 +211,41 @@ public class HTMLDocumentHandler
     }
 
     public void endHeading( int level )
-        throws IOException
+            throws IOException
     {
         super.write( "</h" );
         super.write( level );
         super.write( ">" );
     }
 
-    public void handleReference( String ref, String label )
+    public void startFigureCaption( CaptionProperties properties )
+            throws IOException
+    {
+        super.write( "<figcaption>" );
+
+    }
+
+    public void endFigureCaption()
+            throws IOException
+    {
+        super.write( "</figcaption>" );
+    }
+
+    @Override
+    protected void doStartTableCaption( CaptionProperties properties )
+            throws IOException
+    {
+        super.write( "<caption>" );
+    }
+
+    @Override
+    protected void doEndTableCaption()
+            throws IOException
+    {
+        super.write( "</caption>" );
+    }
+
+    public void handleReference(String ref, String label )
         throws IOException
     {
         super.write( "<a href=\"" );

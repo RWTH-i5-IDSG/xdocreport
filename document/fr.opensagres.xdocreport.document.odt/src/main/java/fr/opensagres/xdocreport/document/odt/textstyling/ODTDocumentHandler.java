@@ -28,12 +28,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.logging.Logger;
 
+import fr.opensagres.xdocreport.core.logging.LogUtils;
 import fr.opensagres.xdocreport.core.utils.StringUtils;
 import fr.opensagres.xdocreport.document.odt.template.ODTContextHelper;
 import fr.opensagres.xdocreport.document.preprocessor.sax.BufferedElement;
 import fr.opensagres.xdocreport.document.textstyling.AbstractDocumentHandler;
 import fr.opensagres.xdocreport.document.textstyling.IDocumentHandler.TextLocation;
+import fr.opensagres.xdocreport.document.textstyling.properties.CaptionProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.HeaderProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.ListItemProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.ListProperties;
@@ -47,6 +50,8 @@ import fr.opensagres.xdocreport.template.IContext;
 public class ODTDocumentHandler
     extends AbstractDocumentHandler
 {
+    private static final Logger LOGGER = LogUtils.getLogger(ODTDocumentHandler.class.getName());
+
     private Stack<Boolean> paragraphsStack;
 
     private boolean insideHeader = false;
@@ -351,23 +356,52 @@ public class ODTDocumentHandler
     }
 
     public void startHeading( int level, HeaderProperties properties )
-        throws IOException
+            throws IOException
     {
         endParagraphIfNeeded();
         super.setTextLocation( TextLocation.End );
         super.write( "<text:h text:style-name=\"" + styleGen.getHeaderStyleName( level ) + "\" text:outline-level=\""
-            + level + "\">" );
+                + level + "\">" );
         insideHeader = true;
         closeHeader = false;
     }
 
     public void endHeading( int level )
-        throws IOException
+            throws IOException
     {
         super.write( "</text:h>" );
         insideHeader = false;
         closeHeader = true;
         // startParagraph();
+    }
+
+    protected void doStartTableCaption( CaptionProperties properties )
+            throws IOException
+    {
+        // TODO implement
+        LOGGER.warning("doStartTableCaption not implemented!");
+    }
+
+    @Override
+    protected void doEndTableCaption()
+            throws IOException
+    {
+        // TODO implement
+        LOGGER.warning("doEndTableCaption not implemented!");
+    }
+
+    public void startFigureCaption( CaptionProperties properties )
+            throws IOException
+    {
+        // TODO implement
+        LOGGER.warning("startFigureCaption not implemented!");
+    }
+
+    public void endFigureCaption()
+            throws IOException
+    {
+        // TODO implement
+        LOGGER.warning("endFigureCaption not implemented!");
     }
 
     @Override
@@ -499,6 +533,7 @@ public class ODTDocumentHandler
         throws IOException
     {
         // TODO: implements
+        LOGGER.warning("handleImage not implemented!");
     }
 
     public void handleLineBreak()

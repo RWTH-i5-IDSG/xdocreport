@@ -1,0 +1,19 @@
+<w:style w:type="paragraph" w:styleId="XDocReport_Caption">
+	<w:name w:val="caption"/>
+	<w:basedOn w:val="Normal"/>
+	<w:next w:val="Normal"/>
+	<w:uiPriority w:val="35"/>
+	<w:unhideWhenUsed/>
+	<w:qFormat/>
+	<w:rsid w:val="00D00A19"/>
+	<w:pPr>
+		<w:spacing w:after="200"/>
+	</w:pPr>
+	<w:rPr>
+		<w:i/>
+		<w:iCs/>
+		<w:color w:val="44546A" w:themeColor="text2"/>
+		<w:sz w:val="18"/>
+		<w:szCs w:val="18"/>
+	</w:rPr>
+</w:style>

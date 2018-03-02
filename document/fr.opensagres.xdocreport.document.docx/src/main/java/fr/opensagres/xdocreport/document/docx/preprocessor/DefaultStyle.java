@@ -34,6 +34,8 @@ public class DefaultStyle
 
     private String hyperLinkStyleId;
 
+    private String captionStyleId;
+
     private Map<Integer, String> headersStyleId;
 
     private Integer abstractNumIdForOrdererList = null;
@@ -55,6 +57,21 @@ public class DefaultStyle
     public boolean hasHyperLinkStyleId()
     {
         return StringUtils.isNotEmpty( getHyperLinkStyleId() );
+    }
+
+    public String getCaptionStyleId()
+    {
+        return captionStyleId;
+    }
+
+    public void setCaptionStyleId( String captionStyleId )
+    {
+        this.captionStyleId = captionStyleId;
+    }
+
+    public boolean hasCaptionStyleId()
+    {
+        return StringUtils.isNotEmpty( getCaptionStyleId() );
     }
 
     public void addHeaderStyle( int level, String styleId )

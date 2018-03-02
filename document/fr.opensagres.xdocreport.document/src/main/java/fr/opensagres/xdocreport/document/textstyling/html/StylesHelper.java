@@ -25,6 +25,7 @@
 package fr.opensagres.xdocreport.document.textstyling.html;
 
 import fr.opensagres.xdocreport.core.utils.StringUtils;
+import fr.opensagres.xdocreport.document.textstyling.properties.CaptionProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.ContainerProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.HeaderProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.ListItemProperties;
@@ -90,7 +91,7 @@ public class StylesHelper
         if ( !stylesMap.isEmpty() )
         {
             ParagraphProperties properties = new ParagraphProperties();
-            processContainerproperties(properties, stylesMap);
+            processContainerProperties(properties, stylesMap);
             return properties;
         }
         return null;
@@ -108,7 +109,7 @@ public class StylesHelper
         if ( !stylesMap.isEmpty() )
         {
             HeaderProperties properties = new HeaderProperties();
-            processContainerproperties( properties, stylesMap );
+            processContainerProperties( properties, stylesMap );
             return properties;
         }
         return null;
@@ -126,7 +127,7 @@ public class StylesHelper
         if ( !stylesMap.isEmpty() )
         {
             ListItemProperties properties = new ListItemProperties();
-            processContainerproperties( properties, stylesMap );
+            processContainerProperties( properties, stylesMap );
             return properties;
         }
         return null;
@@ -144,7 +145,7 @@ public class StylesHelper
         if ( !stylesMap.isEmpty() )
         {
             ListProperties properties = new ListProperties();
-            processContainerproperties( properties, stylesMap );
+            processContainerProperties( properties, stylesMap );
             return properties;
         }
         return null;
@@ -162,13 +163,13 @@ public class StylesHelper
         if ( !stylesMap.isEmpty() )
         {
             SpanProperties properties = new SpanProperties();
-            processContainerproperties( properties, stylesMap );
+            processContainerProperties( properties, stylesMap );
             return properties;
         }
         return null;
     }
 
-    private static void processContainerproperties( ContainerProperties properties, Map<String, String> stylesMap )
+    private static void processContainerProperties(ContainerProperties properties, Map<String, String> stylesMap )
     {
         // page-break-before
         properties.setPageBreakBefore( false );
@@ -307,6 +308,12 @@ public class StylesHelper
     public static TableCellProperties createTableCellProperties( Attributes attributes )
     {
         TableCellProperties properties = new TableCellProperties();
+        return properties;
+    }
+
+    public static CaptionProperties createCaptionProperties( Attributes attributes )
+    {
+        CaptionProperties properties = new CaptionProperties();
         return properties;
     }
 

@@ -32,7 +32,7 @@ public abstract class ContainerProperties
 
     public enum ContainerType
     {
-        SPAN, PARAGRAPH, LIST, LIST_ITEM, HEADER
+        SPAN, PARAGRAPH, LIST, LIST_ITEM, HEADER, CAPTION
     }
 
     private boolean pageBreakBefore;

@@ -50,6 +50,7 @@ import fr.opensagres.xdocreport.document.images.ByteArrayImageProvider;
 import fr.opensagres.xdocreport.document.images.ImageProviderInfo;
 import fr.opensagres.xdocreport.document.preprocessor.sax.BufferedElement;
 import fr.opensagres.xdocreport.document.textstyling.AbstractDocumentHandler;
+import fr.opensagres.xdocreport.document.textstyling.properties.CaptionProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.ContainerProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.HeaderProperties;
 import fr.opensagres.xdocreport.document.textstyling.properties.ListItemProperties;
@@ -773,6 +774,7 @@ public class DocxDocumentHandler
         if (null == ref) {
             return;
         }
+        startParagraphIfNeeded();
         // 1) replace & with &amp;
         // fix issue http://code.google.com/p/xdocreport/issues/detail?id=154
         label = StringUtils.xmlUnescape(label);
@@ -894,6 +896,63 @@ public class DocxDocumentHandler
         super.write("</wp:inline>");
         super.write("</w:drawing>");
         super.write("</w:r>");
+    }
+
+    protected void startCaption( CaptionProperties properties )
+            throws IOException
+    {
+        // Close current paragraph
+        closeCurrentParagraph();
+
+        // In docx, caption is a paragraph with a style.
+
+        // usually, it looks like this for a figure caption (similar for table caption)
+        /**
+         * <w:p w:rsidR="00741A50" w:rsidRDefault="00D00A19" w:rsidP="00D00A19"> <w:pPr> <w:pStyle w:val="Caption"/>
+         * </w:pPr> <w:r> <w:t xml:space="preserve">Figure </w:t> </w:r> <w:fldSimple w:instr=" SEQ Figure \* ARABIC ">
+         * <w:r> <w:rPr> <w:noProof/> </w:rPr> <w:t>1</w:t> </w:r> </w:fldSimple> <w:r> <w:t>: Title</w:t> </w:r> </w:p>
+         */
+        // since we don't know anything about the name of the sequence used, we don't insert that part and end up with
+        /**
+         * <w:p w:rsidR="00741A50" w:rsidRDefault="00D00A19" w:rsidP="00D00A19"> <w:pPr> <w:pStyle w:val="Caption"/>
+         * </w:pPr> <w:r> <w:t>Title</w:t> </w:r> </w:p>
+         */
+        String captionStyleName = styleGen.getCaptionStyleId( defaultStyle );
+        internalStartParagraph( properties, captionStyleName, false );
+        super.write( "<w:r><w:t>" );
+        insideHeader = true;
+    }
+
+    protected void endCaption()
+            throws IOException
+    {
+        super.write( "</w:t></w:r>" );
+        endParagraph();
+        insideHeader = false;
+    }
+
+    @Override
+    public void startFigureCaption( CaptionProperties properties )
+            throws IOException
+    {
+        startCaption( properties );
+    }
+
+    @Override
+    public void endFigureCaption()
+            throws IOException
+    {
+        endCaption();
+    }
+
+    @Override
+    protected void doStartTableCaption(CaptionProperties properties) throws IOException {
+        startCaption( properties );
+    }
+
+    @Override
+    protected void doEndTableCaption() throws IOException {
+        endCaption();
     }
 
     private NumberingRegistry getNumberingRegistry() {
