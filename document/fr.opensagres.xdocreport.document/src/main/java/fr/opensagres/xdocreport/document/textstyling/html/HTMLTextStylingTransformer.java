@@ -28,6 +28,7 @@ import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -85,8 +86,12 @@ public class HTMLTextStylingTransformer
             LOGGER.fine( xml );
         }
         XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-        xmlReader.setContentHandler( new HTMLTextStylingContentHandler( documentHandler ) );
+        xmlReader.setContentHandler( getContentHandler(documentHandler) );
         xmlReader.parse( new InputSource( new StringReader( xml ) ) );
+    }
+
+    protected ContentHandler getContentHandler(IDocumentHandler documentHandler) {
+        return new HTMLTextStylingContentHandler( documentHandler );
     }
 
     protected String generateXhtmlFromContent( String content )

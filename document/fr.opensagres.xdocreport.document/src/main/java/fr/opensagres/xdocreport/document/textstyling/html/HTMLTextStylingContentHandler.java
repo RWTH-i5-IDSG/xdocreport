@@ -25,8 +25,10 @@
 package fr.opensagres.xdocreport.document.textstyling.html;
 
 import java.io.IOException;
+import java.util.function.BiConsumer;
 
 import fr.opensagres.xdocreport.document.textstyling.properties.CaptionProperties;
+import fr.opensagres.xdocreport.document.textstyling.properties.ContainerProperties;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -130,6 +132,8 @@ public class HTMLTextStylingContentHandler
 
     private final IDocumentHandler documentHandler;
 
+    protected final BiConsumer<Attributes, ContainerProperties> propertiesEnhancer;
+
     // current a href + content parsing
     private String aHref;
 
@@ -137,12 +141,22 @@ public class HTMLTextStylingContentHandler
 
     private boolean ignoreCharacters;
 
-    public HTMLTextStylingContentHandler( IDocumentHandler visitor )
+    public HTMLTextStylingContentHandler(IDocumentHandler visitor) {
+        this(visitor, new BiConsumer<Attributes, ContainerProperties>() {
+            @Override
+            public void accept(Attributes attributes, ContainerProperties properties) {
+            }
+        });
+    }
+
+    public HTMLTextStylingContentHandler(IDocumentHandler visitor,
+                                         BiConsumer<Attributes, ContainerProperties> propertiesEnhancer)
     {
         this.documentHandler = visitor;
         this.aHref = null;
         this.aContent = new StringBuilder();
         this.ignoreCharacters = false;
+        this.propertiesEnhancer = propertiesEnhancer;
     }
 
     @Override
@@ -186,48 +200,56 @@ public class HTMLTextStylingContentHandler
             {
                 // Bold
                 SpanProperties properties = StylesHelper.createSpanProperties( attributes.getValue( STYLE_ATTR ) );
+                propertiesEnhancer.accept(attributes, properties);
                 documentHandler.startBold(properties);
             }
             else if ( EM_ELT.equals( name ) || I_ELT.equals( name ) )
             {
                 // Italic
                 SpanProperties properties = StylesHelper.createSpanProperties( attributes.getValue( STYLE_ATTR ) );
+                propertiesEnhancer.accept(attributes, properties);
                 documentHandler.startItalics(properties);
             }
             else if ( U_ELT.equals( name ) )
             {
                 // Underline
                 SpanProperties properties = StylesHelper.createSpanProperties( attributes.getValue( STYLE_ATTR ) );
+                propertiesEnhancer.accept(attributes, properties);
                 documentHandler.startUnderline(properties);
             }
             else if ( STRIKE_ELT.equals( name ) || S_ELT.equals( name ) )
             {
                 // Strike
                 SpanProperties properties = StylesHelper.createSpanProperties( attributes.getValue( STYLE_ATTR ) );
+                propertiesEnhancer.accept(attributes, properties);
                 documentHandler.startStrike(properties);
             }
             else if ( SUB_ELT.equals( name ) )
             {
                 // Subscript
                 SpanProperties properties = StylesHelper.createSpanProperties( attributes.getValue( STYLE_ATTR ) );
+                propertiesEnhancer.accept(attributes, properties);
                 documentHandler.startSubscript(properties);
             }
             else if ( SUP_ELT.equals( name ) )
             {
                 // Superscript
                 SpanProperties properties = StylesHelper.createSpanProperties( attributes.getValue( STYLE_ATTR ) );
+                propertiesEnhancer.accept(attributes, properties);
                 documentHandler.startSuperscript(properties);
             }
             else if ( UL_ELT.equals( name ) )
             {
                 // Unordered List
                 ListProperties properties = StylesHelper.createListProperties( attributes.getValue( STYLE_ATTR ) );
+                propertiesEnhancer.accept(attributes, properties);
                 startList( false, properties );
             }
             else if ( OL_ELT.equals( name ) )
             {
                 // Orderer List
                 ListProperties properties = StylesHelper.createListProperties( attributes.getValue( STYLE_ATTR ) );
+                propertiesEnhancer.accept(attributes, properties);
                 startList( true, properties );
             }
             else if ( LI_ELT.equals( name ) )
@@ -235,6 +257,7 @@ public class HTMLTextStylingContentHandler
                 // List item
                 ListItemProperties properties =
                     StylesHelper.createListItemProperties( attributes.getValue( STYLE_ATTR ) );
+                propertiesEnhancer.accept(attributes, properties);
                 documentHandler.startListItem( properties );
             }
             else if ( P_ELT.equals( name ) )
@@ -242,42 +265,49 @@ public class HTMLTextStylingContentHandler
                 // Paragraph
                 ParagraphProperties properties =
                     StylesHelper.createParagraphProperties( attributes.getValue( STYLE_ATTR ) );
+                propertiesEnhancer.accept(attributes, properties);
                 documentHandler.startParagraph( properties );
             }
             else if ( H1_ELT.equals( name ) )
             {
                 // Header 1
                 HeaderProperties properties = StylesHelper.createHeaderProperties( attributes.getValue( STYLE_ATTR ) );
+                propertiesEnhancer.accept(attributes, properties);
                 documentHandler.startHeading( 1, properties );
             }
             else if ( H2_ELT.equals( name ) )
             {
                 // Header 2
                 HeaderProperties properties = StylesHelper.createHeaderProperties( attributes.getValue( STYLE_ATTR ) );
+                propertiesEnhancer.accept(attributes, properties);
                 documentHandler.startHeading( 2, properties );
             }
             else if ( H3_ELT.equals( name ) )
             {
                 // Header 3
                 HeaderProperties properties = StylesHelper.createHeaderProperties( attributes.getValue( STYLE_ATTR ) );
+                propertiesEnhancer.accept(attributes, properties);
                 documentHandler.startHeading( 3, properties );
             }
             else if ( H4_ELT.equals( name ) )
             {
                 // Header 4
                 HeaderProperties properties = StylesHelper.createHeaderProperties( attributes.getValue( STYLE_ATTR ) );
+                propertiesEnhancer.accept(attributes, properties);
                 documentHandler.startHeading( 4, properties );
             }
             else if ( H5_ELT.equals( name ) )
             {
                 // Header 5
                 HeaderProperties properties = StylesHelper.createHeaderProperties( attributes.getValue( STYLE_ATTR ) );
+                propertiesEnhancer.accept(attributes, properties);
                 documentHandler.startHeading( 5, properties );
             }
             else if ( H6_ELT.equals( name ) )
             {
                 // Header 6
                 HeaderProperties properties = StylesHelper.createHeaderProperties( attributes.getValue( STYLE_ATTR ) );
+                propertiesEnhancer.accept(attributes, properties);
                 documentHandler.startHeading( 6, properties );
             }
             else if ( A_ELT.equals( name ) )
@@ -299,18 +329,21 @@ public class HTMLTextStylingContentHandler
             {
                 // <figcaption>
                 CaptionProperties properties = StylesHelper.createCaptionProperties( attributes );
+                propertiesEnhancer.accept(attributes, properties);
                 documentHandler.startFigureCaption( properties );
             }
             else if ( CAPTION_ELT.equals( name ) )
             {
                 // <caption>
                 CaptionProperties properties = StylesHelper.createCaptionProperties( attributes );
+                propertiesEnhancer.accept(attributes, properties);
                 documentHandler.startTableCaption( properties );
             }
             else if ( SPAN_ELT.equals( name ) )
             {
                 // <span>
                 SpanProperties properties = StylesHelper.createSpanProperties( attributes.getValue( STYLE_ATTR ) );
+                propertiesEnhancer.accept(attributes, properties);
                 documentHandler.startSpan( properties );
             }
             else if ( TABLE_ELT.equals( name ) )

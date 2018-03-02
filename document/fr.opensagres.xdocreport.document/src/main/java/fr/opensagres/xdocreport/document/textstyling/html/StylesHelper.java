@@ -88,13 +88,12 @@ public class StylesHelper
     public static ParagraphProperties createParagraphProperties( String style )
     {
         Map<String, String> stylesMap = StylesHelper.parse( style );
+        ParagraphProperties properties = new ParagraphProperties();
         if ( !stylesMap.isEmpty() )
         {
-            ParagraphProperties properties = new ParagraphProperties();
             processContainerProperties(properties, stylesMap);
-            return properties;
         }
-        return null;
+        return properties;
     }
 
     /**
@@ -106,13 +105,12 @@ public class StylesHelper
     public static HeaderProperties createHeaderProperties( String style )
     {
         Map<String, String> stylesMap = StylesHelper.parse( style );
+        HeaderProperties properties = new HeaderProperties();
         if ( !stylesMap.isEmpty() )
         {
-            HeaderProperties properties = new HeaderProperties();
             processContainerProperties( properties, stylesMap );
-            return properties;
         }
-        return null;
+        return properties;
     }
 
     /**
@@ -124,13 +122,12 @@ public class StylesHelper
     public static ListItemProperties createListItemProperties( String style )
     {
         Map<String, String> stylesMap = StylesHelper.parse( style );
+        ListItemProperties properties = new ListItemProperties();
         if ( !stylesMap.isEmpty() )
         {
-            ListItemProperties properties = new ListItemProperties();
             processContainerProperties( properties, stylesMap );
-            return properties;
         }
-        return null;
+        return properties;
     }
 
     /**
@@ -142,13 +139,12 @@ public class StylesHelper
     public static ListProperties createListProperties( String style )
     {
         Map<String, String> stylesMap = StylesHelper.parse( style );
+        ListProperties properties = new ListProperties();
         if ( !stylesMap.isEmpty() )
         {
-            ListProperties properties = new ListProperties();
             processContainerProperties( properties, stylesMap );
-            return properties;
         }
-        return null;
+        return properties;
     }
 
     /**
@@ -160,13 +156,12 @@ public class StylesHelper
     public static SpanProperties createSpanProperties( String style )
     {
         Map<String, String> stylesMap = StylesHelper.parse( style );
+        SpanProperties properties = new SpanProperties();
         if ( !stylesMap.isEmpty() )
         {
-            SpanProperties properties = new SpanProperties();
             processContainerProperties( properties, stylesMap );
-            return properties;
         }
-        return null;
+        return properties;
     }
 
     private static void processContainerProperties(ContainerProperties properties, Map<String, String> stylesMap )
