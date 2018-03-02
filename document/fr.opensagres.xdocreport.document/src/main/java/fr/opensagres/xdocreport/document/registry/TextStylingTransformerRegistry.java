@@ -95,4 +95,11 @@ public class TextStylingTransformerRegistry
         return transformers.get( syntaxKind );
     }
 
+    public boolean registerExternalInstance( String syntaxKind, ITextStylingTransformer transformer ) {
+        if (transformers.containsKey(syntaxKind)) {
+            return false;
+        }
+        transformers.put( syntaxKind, transformer );
+        return true;
+    }
 }
