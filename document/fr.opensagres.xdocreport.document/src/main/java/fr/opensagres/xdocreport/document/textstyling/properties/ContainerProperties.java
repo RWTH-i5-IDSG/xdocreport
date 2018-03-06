@@ -59,6 +59,10 @@ public abstract class ContainerProperties
 
     private String backgroundColorName;
 
+    private Integer indentationLeft;
+
+    private Integer indentationRight;
+
     private final ContainerType type;
 
     public ContainerProperties( ContainerType type )
@@ -183,5 +187,21 @@ public abstract class ContainerProperties
 
     public String getBackgroundColorName() {
         return backgroundColorName;
+    }
+
+    public Integer getIndentationLeft() {
+        return indentationLeft;
+    }
+
+    public void setIndentationLeft(Integer indentationLeft) {
+        this.indentationLeft = indentationLeft;
+    }
+
+    public Integer getIndentationRight() {
+        return indentationRight;
+    }
+
+    public void setIndentationRight(Integer indentationRight) {
+        this.indentationRight = indentationRight;
     }
 }

@@ -571,6 +571,7 @@ public class DocxDocumentHandler
                         break;
                 }
             }
+            processParagraphIndentation(properties);
             // rPPr
             processRunProperties( true, properties.isBold(), properties.isItalic(), properties.isUnderline(),
                                   properties.isStrike(), properties.isSubscript(), properties.isSuperscript(),
@@ -578,6 +579,32 @@ public class DocxDocumentHandler
         }
 
         endPPrIfNeeded();
+    }
+
+    private void processParagraphIndentation(ContainerProperties properties) throws IOException {
+        if (properties.getType() != ContainerProperties.ContainerType.PARAGRAPH) {
+            return;
+        }
+
+        Integer indLeft = properties.getIndentationLeft();
+        Integer indRight = properties.getIndentationRight();
+        if (indLeft == null && indRight == null) {
+            return;
+        }
+
+        startPPrIfNeeded();
+        super.write( "<w:ind ");
+        if (indLeft != null && indLeft > 0) {
+            super.write( "w:left=\"");
+            super.write(indLeft.toString());
+            super.write("\" ");
+        }
+        if (indRight != null && indRight > 0) {
+            super.write( "w:right=\"");
+            super.write(indRight.toString());
+            super.write("\" ");
+        }
+        super.write("/>");
     }
 
     private void startPPrIfNeeded()
