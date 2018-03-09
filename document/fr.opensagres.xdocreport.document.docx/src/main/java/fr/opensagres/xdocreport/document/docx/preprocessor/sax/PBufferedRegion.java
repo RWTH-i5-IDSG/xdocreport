@@ -120,7 +120,7 @@ public class PBufferedRegion
 
     public void process()
     {
-        Collection<BufferedElement> toRemove = new ArrayList<BufferedElement>();
+        Collection<RBufferedRegion> toRemove = new ArrayList<>();
         boolean remove = false;
         boolean fieldNameSetted = false;
         String fieldName = null;

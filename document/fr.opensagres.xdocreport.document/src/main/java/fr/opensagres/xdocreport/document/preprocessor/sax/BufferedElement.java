@@ -206,7 +206,7 @@ public class BufferedElement implements IBufferedRegion {
 	 * 
 	 * @param elements
 	 */
-	public void removeAll(Collection<BufferedElement> elements) {
+	public void removeAll(Collection<? extends BufferedElement> elements) {
 		BufferedTagElement tagElement = null;
 		for (BufferedElement element : elements) {
 			// remove start tag element
