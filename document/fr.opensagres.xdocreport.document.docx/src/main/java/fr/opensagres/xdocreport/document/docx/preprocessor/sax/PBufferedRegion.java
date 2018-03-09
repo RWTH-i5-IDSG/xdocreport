@@ -26,8 +26,11 @@ package fr.opensagres.xdocreport.document.docx.preprocessor.sax;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
+import fr.opensagres.xdocreport.template.formatter.FieldMetadata;
 import org.xml.sax.Attributes;
 
 import fr.opensagres.xdocreport.document.preprocessor.sax.BufferedElement;
@@ -73,7 +76,7 @@ import fr.opensagres.xdocreport.document.preprocessor.sax.ISavable;
  *   <w:fldChar w:fldCharType="end" /> 
  *   </w:r>
  *   </w:p>
- * 
+ *
  * </pre>
  */
 public class PBufferedRegion
@@ -175,7 +178,6 @@ public class PBufferedRegion
                         fieldName = firstR.getFieldName();
                         if ( fieldName != null )
                         {
-
                             if ( document.processScriptBeforeAfter( firstR ) )
                             {
                                 rReseted = true;
@@ -186,6 +188,9 @@ public class PBufferedRegion
                                 toRemove.add( r );
                                 i++;
                             }
+
+                            handleReplaceParagraphs(firstR);
+
                             toRemove.add( rBufferedRegion );
                             remove = true;
                         }
@@ -222,12 +227,28 @@ public class PBufferedRegion
                     // remove
                     if (!rBufferedRegion.isContainsNote()) {
                         toRemove.add( rBufferedRegion );
-                    }                    
+                    }
                 }
             }
         }
         rBufferedRegions.removeAll( toRemove );
         super.removeAll( toRemove );
+    }
+
+    /**
+     * checks for field styling setting replaceParagraph
+     * if that is set, clears the regions in this PBufferedRegion
+     * this is done for fields that are in dummy paragraphs and that bring their own paragraphs
+     * (e.g. using <p> in html styled text)
+     *
+     * @param stylabeRun run to read the replaceParagraph property from
+     */
+    private void handleReplaceParagraphs(RBufferedRegion stylabeRun) {
+        FieldMetadata fieldAsTextStyling = stylabeRun.getFieldAsTextStyling();
+        if ( null != fieldAsTextStyling && fieldAsTextStyling.isReplaceParagraphs() ) {
+            this.startTagElement.reset();
+            this.endTagElement.reset();
+        }
     }
 
     public boolean isContainsField()

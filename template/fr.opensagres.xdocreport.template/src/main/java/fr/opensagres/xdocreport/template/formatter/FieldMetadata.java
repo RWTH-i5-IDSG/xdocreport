@@ -52,6 +52,8 @@ public class FieldMetadata
 
     private boolean useImageSize;
 
+    private boolean replaceParagraphs;
+
     public FieldMetadata( FieldsMetadata fieldsMetadata, String fieldName, boolean listType, String imageName,
                           String syntaxKind, boolean syntaxWithDirective )
     {
@@ -211,4 +213,11 @@ public class FieldMetadata
         this.useImageSize = useImageSize;
     }
 
+    public boolean isReplaceParagraphs() {
+        return replaceParagraphs;
+    }
+
+    public void setReplaceParagraphs(boolean replaceParagraphs) {
+        this.replaceParagraphs = replaceParagraphs;
+    }
 }
