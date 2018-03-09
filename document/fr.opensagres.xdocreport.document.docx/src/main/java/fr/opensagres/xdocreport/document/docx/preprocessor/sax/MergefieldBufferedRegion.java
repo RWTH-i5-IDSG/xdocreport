@@ -24,6 +24,7 @@
  */
 package fr.opensagres.xdocreport.document.docx.preprocessor.sax;
 
+import fr.opensagres.xdocreport.core.logging.LogUtils;
 import org.xml.sax.Attributes;
 
 import fr.opensagres.xdocreport.core.document.DocumentKind;
@@ -44,7 +45,7 @@ public abstract class MergefieldBufferedRegion
     private static final String W_P = "w:p";
 
     private static final String START_MERGEFORMAT = "\\*";
-    
+
     private static final String MERGEFORMAT = "MERGEFORMAT";
 
     private static final String MERGEFIELD_FIELD_TYPE = "MERGEFIELD";
@@ -139,7 +140,7 @@ public abstract class MergefieldBufferedRegion
             {
                 // Test if fieldName ends with \* MERGEFORMAT
             	// sometimes \* MERGEFORMAT is splitted in several w:instrText
-            	// ex : 
+            	// ex :
             	// <w:r><w:instrText xml:space="preserve"> MERGEFIELD ${acuOther.cond} \* MER</w:instrText></w:r>
             	// <w:r><w:instrText xml:space="preserve">GEFORMAT </w:instrText></w:r>
             	//
@@ -160,7 +161,7 @@ public abstract class MergefieldBufferedRegion
                     // foreach($developer in $developers)
                     // remove first " if needed
                     if ( fieldName.startsWith( "\"" ) && fieldName.endsWith( "\"" ) )
-                    {                    	
+                    {
                     	if (fieldName.length() == 1) {
                     		// in some case, filedName can be just "
                         	// <w:instrText xml:space="preserve"> MERGEFIELD "</w:instrText>
@@ -190,6 +191,15 @@ public abstract class MergefieldBufferedRegion
                     {
                         // Find parent paragraph
                         BufferedElement parent = mergefield.findParent( W_P );
+
+                        if (fieldMetadata.isReplaceParagraphs()) {
+                            try {
+                                ((PBufferedRegion) parent).setFieldMetadataSaysReplaceParagraphs(true);
+                            } catch (ClassCastException e) {
+                                LogUtils.getLogger(MergefieldBufferedRegion.class.getName()).warning("P was not in PBufferedRegion");
+                            }
+                        }
+
                         // Test if $___NoEscape0.TextBefore was already generated for the field.
                         String key = new StringBuilder( fieldName ).append( TEXTSTYLING ).toString();
                         String directive = parent.get( key );
@@ -199,7 +209,7 @@ public abstract class MergefieldBufferedRegion
                             // don't add it
                             return directive;
                         }
-                     
+
                         // register parent buffered element
                         long variableIndex = handler.getVariableIndex();
 
@@ -239,7 +249,7 @@ public abstract class MergefieldBufferedRegion
 
     public BufferedElement getTRegion(int index)
     {
-    	return super.findChildAt( "w:t", index );       
+    	return super.findChildAt( "w:t", index );
     }
 
 }

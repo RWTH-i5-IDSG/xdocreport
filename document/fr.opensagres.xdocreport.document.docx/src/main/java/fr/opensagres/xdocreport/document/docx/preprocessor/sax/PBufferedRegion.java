@@ -95,6 +95,8 @@ public class PBufferedRegion
 
     private boolean containsField;
 
+    private boolean fieldMetadataSaysReplaceParagraphs;
+
     public PBufferedRegion( DocxBufferedDocument document, BufferedElement parent, String uri, String localName,
                             String name, Attributes attributes )
     {
@@ -189,8 +191,6 @@ public class PBufferedRegion
                                 i++;
                             }
 
-                            handleReplaceParagraphs(firstR);
-
                             toRemove.add( rBufferedRegion );
                             remove = true;
                         }
@@ -233,19 +233,14 @@ public class PBufferedRegion
         }
         rBufferedRegions.removeAll( toRemove );
         super.removeAll( toRemove );
-    }
 
-    /**
-     * checks for field styling setting replaceParagraph
-     * if that is set, clears the regions in this PBufferedRegion
-     * this is done for fields that are in dummy paragraphs and that bring their own paragraphs
-     * (e.g. using <p> in html styled text)
-     *
-     * @param stylabeRun run to read the replaceParagraph property from
-     */
-    private void handleReplaceParagraphs(RBufferedRegion stylabeRun) {
-        FieldMetadata fieldAsTextStyling = stylabeRun.getFieldAsTextStyling();
-        if ( null != fieldAsTextStyling && fieldAsTextStyling.isReplaceParagraphs() ) {
+        /**
+         * checks for field styling setting replaceParagraph
+         * if that is set, clears the regions in this PBufferedRegion
+         * this is done for fields that are in dummy paragraphs and that bring their own paragraphs
+         * (e.g. using <p> in html styled text)
+         */
+        if (fieldMetadataSaysReplaceParagraphs) {
             this.startTagElement.reset();
             this.endTagElement.reset();
         }
@@ -257,4 +252,11 @@ public class PBufferedRegion
         return false;
     }
 
+    public boolean isFieldMetadataSaysReplaceParagraphs() {
+        return fieldMetadataSaysReplaceParagraphs;
+    }
+
+    public void setFieldMetadataSaysReplaceParagraphs(boolean fieldMetadataSaysReplaceParagraphs) {
+        this.fieldMetadataSaysReplaceParagraphs = fieldMetadataSaysReplaceParagraphs;
+    }
 }
