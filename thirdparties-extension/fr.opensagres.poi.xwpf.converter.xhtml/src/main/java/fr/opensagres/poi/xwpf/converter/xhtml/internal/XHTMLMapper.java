@@ -302,7 +302,7 @@ public class XHTMLMapper
     }
     
     @Override
-    protected void visitStyleText(XWPFRun run, String text) throws Exception 
+    protected void visitStyleText(XWPFRun run, String text, Object parent, boolean pageNumber) throws Exception
     {
     	if(run.getFontFamily() == null) {
 			run.setFontFamily(getStylesDocument().getFontFamilyAscii(run));

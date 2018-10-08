@@ -27,8 +27,10 @@ package fr.opensagres.poi.xwpf.converter.pdf.internal.elements;
 import static fr.opensagres.poi.xwpf.converter.core.utils.DxaUtil.dxa2points;
 
 import java.io.OutputStream;
+import java.math.BigInteger;
 
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageMar;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageNumber;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPageSz;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTSectPr;
 
@@ -66,7 +68,7 @@ public class StylableDocument
 
     private PdfPTable layoutTable;
 
-    private ColumnText text;
+    private StylableColumnText text;
 
     private int colIdx;
 
@@ -78,6 +80,7 @@ public class StylableDocument
         super( out, configuration );
     }
 
+    @Override
     public void addElement( Element element )
     {
         if ( !super.isOpen() )
@@ -91,7 +94,17 @@ public class StylableDocument
         }
         text.addElement( element );
         StylableDocumentSection.getCell( layoutTable, colIdx ).getColumn().addElement( element );
-        simulateText();
+        try
+        {
+            if ( ColumnText.hasMoreText( text.go( true ) ) && !text.isBlank() )
+            {
+                columnBreak();
+            }
+        }
+        catch ( DocumentException e )
+        {
+            throw new XWPFConverterException( e );
+        }
         documentEmpty = false;
     }
 
@@ -152,6 +165,12 @@ public class StylableDocument
     public boolean newPage()
     {
         throw new XWPFConverterException( "internal error - do not call newPage directly" );
+    }
+
+    @Override
+    public int getPageNumber()
+    {
+        return writer.getPageNumber();
     }
 
     @Override
@@ -331,6 +350,16 @@ public class StylableDocument
                                       dxa2points( pageMar.getTop() ), dxa2points( pageMar.getBottom() ) );
         }
 
+        // see http://officeopenxml.com/WPSectionPgNumType.php
+        CTPageNumber pageNumberType = sectPr.getPgNumType();
+        if ( pageNumberType != null )
+        {
+            BigInteger start = pageNumberType.getStart();
+            if ( start != null )
+            {
+                writer.setPageCount( start.intValue() - 1 );
+            }
+        }
     }
 
     private void flushTable()
